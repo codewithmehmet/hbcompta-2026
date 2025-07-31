@@ -44,6 +44,18 @@ export const nextJsConfig = [
       ...pluginReactHooks.configs.recommended.rules,
       // React scope no longer necessary with new JSX transform.
       "react/react-in-jsx-scope": "off",
+      // Désactiver react/prop-types pour les projets TypeScript
+      "react/prop-types": "off",
+    },
+  },
+  {
+    // Configuration spécifique pour les composants shadcn/ui
+    files: ["**/components/ui/**/*.tsx"],
+    rules: {
+      "react/prop-types": "off",
+      "@typescript-eslint/no-empty-interface": "off",
+      "@typescript-eslint/no-explicit-any": "off",
+      "react/display-name": "off",
     },
   },
 ];
