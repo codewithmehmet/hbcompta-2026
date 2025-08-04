@@ -3,11 +3,11 @@ import { ProductModule } from "./product/product.module";
 import { UsersModule } from "./users/users.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { LoggerModule } from "nestjs-pino";
+import { DatabaseModule } from "./database/database.module";
 
 @Module({
   imports: [
     LoggerModule.forRootAsync({
-      imports: [ConfigModule],
       useFactory: (configService: ConfigService) => {
         const isProduction = configService.get("NODE_ENV") === "production";
 
@@ -33,7 +33,8 @@ import { LoggerModule } from "nestjs-pino";
       },
       inject: [ConfigService],
     }),
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({ isGlobal: true }),
+    DatabaseModule,
     ProductModule,
     UsersModule,
   ],

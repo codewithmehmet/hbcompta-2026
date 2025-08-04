@@ -1,9 +1,20 @@
-import { Injectable } from "@nestjs/common";
-import { CreateUserRequest } from "./dto/create-user.request";
+import { Inject, Injectable } from "@nestjs/common";
+import { DATABASE_CONNECTION } from "../database/database-connection";
+import { NodePgDatabase } from "drizzle-orm/node-postgres";
+import * as schema from "../database/schemas/user.schema";
 
 @Injectable()
 export class UsersService {
-  createUser(data: CreateUserRequest) {
-    console.log("Creating user with data:", data);
+  constructor(
+    @Inject(DATABASE_CONNECTION)
+    private readonly database: NodePgDatabase<typeof schema>
+  ) {}
+
+  async getUsers() {
+    return this.database.query.users.findMany();
+  }
+
+  async createUser(user: typeof schema.users.$inferInsert) {
+    await this.database.insert(schema.users).values(user);
   }
 }

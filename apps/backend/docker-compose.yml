@@ -1,0 +1,11 @@
+services:
+  db:
+    container_name: hbcompta_db
+    restart: always
+    image: postgres:16.2
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_USER=myuser
+      - POSTGRES_DB=hbcompta2026
+    ports:
+      - 5432:5432
