@@ -4,6 +4,8 @@ import { DATABASE_CONNECTION } from "./database-connection";
 import { ConfigService } from "@nestjs/config";
 import { Pool } from "pg";
 import * as userSchema from "./schemas/user.schema";
+import * as companySchema from "./schemas/company.schema";
+import * as countrySchema from "./schemas/country.schema";
 
 @Module({
   providers: [
@@ -14,7 +16,7 @@ import * as userSchema from "./schemas/user.schema";
           connectionString: configService.getOrThrow("DATABASE_URL"),
         });
         return drizzle(pool, {
-          schema: { ...userSchema },
+          schema: { ...userSchema, ...companySchema, ...countrySchema },
         });
       },
       inject: [ConfigService],

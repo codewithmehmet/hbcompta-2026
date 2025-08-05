@@ -8,6 +8,13 @@
       "when": 1754340169032,
       "tag": "0000_hard_kree",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1754383885395,
+      "tag": "0001_cynical_raider",
+      "breakpoints": true
     }
   ]
 }

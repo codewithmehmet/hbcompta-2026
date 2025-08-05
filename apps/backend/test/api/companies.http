@@ -1,0 +1,163 @@
+### Test du contrôleur Companies
+### Base URL
+@baseUrl = http://localhost:4000
+@companiesUrl = {{baseUrl}}/companies
+
+### Variables pour les tests
+@companyId = 9844a181-34be-40a5-808a-11107b4cb248
+
+### 1. POST - Créer une nouvelle entreprise
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "Test Company SARL",
+  "email": "contact@testcompany.com",
+  "phone": "+33123456789",
+  "address": "123 Rue de la Paix",
+  "city": "Paris",
+  "postalCode": "75001",
+  "countryId": "FR",
+  "notes": "Entreprise de test créée via API"
+}
+
+### 2. POST - Créer une entreprise avec données minimales (seulement le nom)
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "Minimal Company"
+}
+
+### 3. POST - Test avec données invalides (email invalide)
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "Invalid Email Company",
+  "email": "invalid-email"
+}
+
+### 4. POST - Test avec nom vide (doit échouer)
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "",
+  "email": "test@example.com"
+}
+
+### 5. GET - Récupérer toutes les entreprises
+GET {{companiesUrl}}
+
+### 6. GET - Récupérer une entreprise spécifique (remplacer {id} par un ID valide)
+GET {{companiesUrl}}/{{companyId}}
+
+### 7. GET - Test avec ID inexistant
+GET {{companiesUrl}}/99999999-9999-9999-9999-999999999999
+
+### 8. GET - Test avec ID invalide (format incorrect)
+GET {{companiesUrl}}/invalid-id
+
+### 9. PATCH - Mettre à jour une entreprise complète
+PATCH {{companiesUrl}}/{{companyId}}
+Content-Type: application/json
+
+{
+  "name": "Updated Company Name",
+  "email": "updated@company.com",
+  "phone": "+33987654321",
+  "address": "456 Avenue des Champs",
+  "city": "Lyon",
+  "postalCode": "69000",
+  "countryId": "FR",
+  "notes": "Entreprise mise à jour"
+}
+
+### 10. PATCH - Mettre à jour partiellement (seulement le nom)
+PATCH {{companiesUrl}}/{{companyId}}
+Content-Type: application/json
+
+{
+  "name": "Partially Updated Company"
+}
+
+### 11. PATCH - Mettre à jour avec email invalide (doit échouer)
+PATCH {{companiesUrl}}/{{companyId}}
+Content-Type: application/json
+
+{
+  "email": "invalid-email-format"
+}
+
+### 12. PATCH - Test mise à jour avec ID inexistant
+PATCH {{companiesUrl}}/99999999-9999-9999-9999-999999999999
+Content-Type: application/json
+
+{
+  "name": "Non-existent Company"
+}
+
+### 13. DELETE - Supprimer une entreprise (remplacer {id} par un ID valide)
+DELETE {{companiesUrl}}/{{companyId}}
+
+### 14. DELETE - Test suppression avec ID inexistant
+DELETE {{companiesUrl}}/99999999-9999-9999-9999-999999999999
+
+### 15. DELETE - Test suppression avec ID invalide
+DELETE {{companiesUrl}}/invalid-id
+
+### Tests de charge et cas limites
+
+### 16. POST - Entreprise avec nom très long (255 caractères max)
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "email": "longname@test.com"
+}
+
+### 17. POST - Entreprise avec nom trop long (doit échouer - 256 caractères)
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+  "email": "toolongname@test.com"
+}
+
+### 18. POST - Test avec tous les champs optionnels remplis
+POST {{companiesUrl}}
+Content-Type: application/json
+
+{
+  "name": "Complete Company Data",
+  "email": "complete@company.com",
+  "phone": "+33123456789",
+  "notes": "Notes très détaillées sur cette entreprise avec beaucoup d'informations importantes",
+  "address": "123 Boulevard Saint-Germain, Bâtiment A, 3ème étage",
+  "city": "Marseille",
+  "postalCode": "13001",
+  "countryId": "FR"
+}
+
+### 19. PATCH - Vider des champs optionnels (null/undefined)
+PATCH {{companiesUrl}}/{{companyId}}
+Content-Type: application/json
+
+{
+  "email": null,
+  "phone": null,
+  "notes": null
+}
+
+### 20. GET - Vérifier que l'entreprise mise à jour n'a plus d'email/téléphone
+GET {{companiesUrl}}/{{companyId}}
+
+### Notes d'utilisation :
+### 1. Remplacez {{companyId}} par un ID d'entreprise valide récupéré lors de la création
+### 2. Assurez-vous que votre serveur backend tourne sur localhost:3000
+### 3. Ces tests couvrent tous les cas : succès, échecs, validations, cas limites
+### 4. Pour automatiser, vous pouvez utiliser ces requêtes avec des outils comme Postman ou Insomnia
+### 5. Les tests 13-15 suppriront des données, utilisez-les sur une base de test
