@@ -5,6 +5,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { LoggerModule } from "nestjs-pino";
 import { DatabaseModule } from "./database/database.module";
 import { CompaniesModule } from "./companies/companies.module";
+import { DocumentsModule } from "./documents/documents.module";
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { CompaniesModule } from "./companies/companies.module";
     ProductModule,
     UsersModule,
     CompaniesModule,
+    DocumentsModule,
   ],
   controllers: [],
   providers: [],

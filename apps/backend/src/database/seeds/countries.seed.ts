@@ -1,9 +1,8 @@
 import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { combinedSchema } from "../schemas/index";
 import * as countrySchema from "../schemas/country.schema";
-import * as companySchema from "../schemas/company.schema";
-import * as userSchema from "../schemas/user.schema";
 
 // Charger les variables d'environnement
 config();
@@ -254,7 +253,7 @@ async function seedCountries() {
     });
 
     const database = drizzle(pool, {
-      schema: { ...userSchema, ...companySchema, ...countrySchema },
+      schema: combinedSchema,
     });
 
     console.log("🌍 Debut du seed des pays...");

@@ -1,0 +1,258 @@
+### Test de l'API Documents - Upload et gestion de fichiers
+### Base URL
+@baseUrl = http://localhost:4000
+@documentsUrl = {{baseUrl}}/documents
+
+### Variables pour les tests
+@companyId = 9844a181-34be-40a5-808a-11107b4cb248
+@documentId = 9995573a-577a-474e-9d81-9276dbc579aa
+
+### 📤 1. UPLOAD - Document PDF valide (avec un vrai fichier)
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundary123
+
+--boundary123
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundary123
+Content-Disposition: form-data; name="type"
+
+financial
+--boundary123
+Content-Disposition: form-data; name="description"
+
+Bilan financier 2024
+--boundary123
+Content-Disposition: form-data; name="file"; filename="pdf-test.pdf"
+
+< C:/Users/Mehmet.Cinar/Downloads/pdf-test.pdf
+--boundary123--
+
+### 📤 2. UPLOAD - Document image valide
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundary456
+
+--boundary456
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundary456
+Content-Disposition: form-data; name="type"
+
+identity
+--boundary456
+Content-Disposition: form-data; name="file"; filename="statuts.jpg"
+Content-Type: image/jpeg
+
+JPEG fake content
+--boundary456--
+
+### 📤 3. UPLOAD - Document Excel
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundary789
+
+--boundary789
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundary789
+Content-Disposition: form-data; name="type"
+
+tax
+--boundary789
+Content-Disposition: form-data; name="file"; filename="declarations-tva.xlsx"
+Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+
+Excel fake content
+--boundary789--
+
+### ❌ 4. UPLOAD - Fichier trop volumineux (doit échouer)
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundaryBig
+
+--boundaryBig
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundaryBig
+Content-Disposition: form-data; name="type"
+
+other
+--boundaryBig
+Content-Disposition: form-data; name="file"; filename="huge-file.pdf"
+Content-Type: application/pdf
+
+< C:/Users/Mehmet.Cinar/Downloads/big-file.pdf
+--boundaryBig--
+
+### ❌ 5. UPLOAD - Type de fichier non autorisé (doit échouer)
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundaryBad
+
+--boundaryBad
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundaryBad
+Content-Disposition: form-data; name="type"
+
+other
+--boundaryBad
+Content-Disposition: form-data; name="file"; filename="virus.exe"
+Content-Type: application/octet-stream
+
+Fake executable content
+--boundaryBad--
+
+### ❌ 6. UPLOAD - Entreprise inexistante (doit échouer)
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundaryNoComp
+
+--boundaryNoComp
+Content-Disposition: form-data; name="companyId"
+
+99999999-9999-9999-9999-999999999999
+--boundaryNoComp
+Content-Disposition: form-data; name="type"
+
+other
+--boundaryNoComp
+Content-Disposition: form-data; name="file"; filename="test.pdf"
+Content-Type: application/pdf
+
+PDF content
+--boundaryNoComp--
+
+### 📋 7. GET - Liste tous les documents (avec pagination)
+GET {{documentsUrl}}
+
+### 📋 8. GET - Liste avec filtres et pagination
+GET {{documentsUrl}}?page=1&limit=5&type=financial&status=pending
+
+### 📋 9. GET - Recherche par nom de fichier
+GET {{documentsUrl}}?search=bilan&limit=10
+
+### 📋 10. GET - Documents d'une entreprise spécifique
+GET {{documentsUrl}}/company/{{companyId}}
+
+### 📋 11. GET - Détails d'un document spécifique
+GET {{documentsUrl}}/{{documentId}}
+
+### 📊 12. GET - Statistiques des documents
+GET {{documentsUrl}}/stats
+
+### 📊 13. GET - Statistiques pour une entreprise spécifique
+GET {{documentsUrl}}/stats?companyId={{companyId}}
+
+### 📥 14. GET - Télécharger un document
+GET {{documentsUrl}}/{{documentId}}/download
+
+### 👁️ 15. GET - Aperçu d'un document (dans le navigateur)
+GET {{documentsUrl}}/{{documentId}}/preview
+
+### ✏️ 16. PATCH - Mettre à jour le statut d'un document
+PATCH {{documentsUrl}}/{{documentId}}
+Content-Type: application/json
+
+{
+  "status": "processed",
+  "description": "Document traité et validé"
+}
+
+### ✏️ 17. PATCH - Marquer comme archivé
+PATCH {{documentsUrl}}/{{documentId}}
+Content-Type: application/json
+
+{
+  "status": "archived"
+}
+
+### ❌ 18. PATCH - Mettre à jour avec un statut invalide (doit échouer)
+PATCH {{documentsUrl}}/{{documentId}}
+Content-Type: application/json
+
+{
+  "status": "invalid_status"
+}
+
+### 🗑️ 19. DELETE - Supprimer un document (fichier + BDD)
+DELETE {{documentsUrl}}/{{documentId}}
+
+### ❌ 20. DELETE - Supprimer un document inexistant (doit échouer)
+DELETE {{documentsUrl}}/99999999-9999-9999-9999-999999999999
+
+### Tests de cas limites et validation
+
+### 📤 21. UPLOAD - Nom de fichier avec caractères spéciaux
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundarySpecial
+
+--boundarySpecial
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundarySpecial
+Content-Disposition: form-data; name="type"
+
+administrative
+--boundarySpecial
+Content-Disposition: form-data; name="file"; filename="document-àçéñ_特殊字符.pdf"
+Content-Type: application/pdf
+
+PDF content with special filename
+--boundarySpecial--
+
+### 📤 22. UPLOAD - Tous les types de documents supportés
+POST {{documentsUrl}}/upload
+Content-Type: multipart/form-data; boundary=boundaryTypes
+
+--boundaryTypes
+Content-Disposition: form-data; name="companyId"
+
+{{companyId}}
+--boundaryTypes
+Content-Disposition: form-data; name="type"
+
+legal
+--boundaryTypes
+Content-Disposition: form-data; name="file"; filename="contrat.docx"
+Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document
+
+DOCX content
+--boundaryTypes--
+
+### 📋 23. GET - Test pagination extrême
+GET {{documentsUrl}}?page=999&limit=1
+
+### 📋 24. GET - Test avec tous les filtres combinés
+GET {{documentsUrl}}?companyId={{companyId}}&type=financial&status=processed&search=bilan&page=1&limit=20
+
+### ❌ 25. GET - Document inexistant (doit échouer)
+GET {{documentsUrl}}/99999999-9999-9999-9999-999999999999
+
+### Notes d'utilisation :
+### 
+### 🔧 Configuration requise :
+### 1. Serveur backend démarré sur localhost:4000
+### 2. Base de données avec au moins une entreprise
+### 3. Variable UPLOAD_PATH configurée
+### 4. Dossier d'upload existant et accessible en écriture
+### 
+### 📝 Utilisation :
+### 1. Remplacez {{companyId}} par un ID d'entreprise valide
+### 2. Après un upload réussi, copiez l'ID du document retourné
+### 3. Remplacez {{documentId}} par cet ID pour les autres tests
+### 4. Les tests 1-3 créent des documents, testez-les en premier
+### 5. Les tests avec ❌ sont des cas d'erreur attendus
+### 
+### 🎯 Types de documents supportés :
+### - identity, financial, tax, legal, administrative, other
+### 
+### 📁 Extensions supportées :
+### - Images: jpg, jpeg, png, gif
+### - Documents: pdf, doc, docx, xls, xlsx, txt
+### 
+### 🛡️ Limites :
+### - Taille max: 10MB
+### - Validation automatique des types MIME
