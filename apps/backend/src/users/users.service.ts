@@ -1,12 +1,14 @@
 import {
   Inject,
   Injectable,
+  NotFoundException,
   UnprocessableEntityException,
 } from "@nestjs/common";
 import { DATABASE_CONNECTION } from "../database/database-connection";
 import { NodePgDatabase } from "drizzle-orm/node-postgres";
 import * as schema from "../database/schemas/user.schema";
 import * as bcrypt from "bcrypt";
+import { eq } from "drizzle-orm";
 
 @Injectable()
 export class UsersService {
@@ -19,14 +21,20 @@ export class UsersService {
     return this.database.query.users.findMany();
   }
 
-  async createUser(user: typeof schema.users.$inferInsert) {
+  async createUser(data: typeof schema.users.$inferInsert) {
     try {
-      const hashedPassword = await bcrypt.hash(user.password, 12);
+      const [user] = await this.database
+        .insert(schema.users)
+        .values({
+          ...data,
+          password: await bcrypt.hash(data.password, 10),
+        })
+        .returning({
+          email: schema.users.email,
+          id: schema.users.id,
+        });
 
-      await this.database.insert(schema.users).values({
-        ...user,
-        password: hashedPassword,
-      });
+      return user;
     } catch (error: any) {
       const pgError = error.cause;
       if (pgError && pgError.code === "23505") {
@@ -36,5 +44,25 @@ export class UsersService {
       }
       throw error;
     }
+  }
+
+  async getUser(filter: { email?: string; id?: string }) {
+    let user: typeof schema.users.$inferSelect | undefined;
+
+    if (filter.email) {
+      user = await this.database.query.users.findFirst({
+        where: eq(schema.users.email, filter.email),
+      });
+    } else if (filter.id) {
+      user = await this.database.query.users.findFirst({
+        where: eq(schema.users.id, filter.id),
+      });
+    }
+
+    if (!user) {
+      throw new NotFoundException("User not found");
+    }
+
+    return user;
   }
 }

@@ -6,6 +6,7 @@ import { LoggerModule } from "nestjs-pino";
 import { DatabaseModule } from "./database/database.module";
 import { CompaniesModule } from "./companies/companies.module";
 import { DocumentsModule } from "./documents/documents.module";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { DocumentsModule } from "./documents/documents.module";
     UsersModule,
     CompaniesModule,
     DocumentsModule,
+    AuthModule,
   ],
   controllers: [],
   providers: [],
