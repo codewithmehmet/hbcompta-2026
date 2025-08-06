@@ -8,10 +8,12 @@ import {
   FormProvider,
   useFormContext,
   useFormState,
+  useForm,
   type ControllerProps,
   type FieldPath,
   type FieldValues,
 } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import { cn } from "@repo/ui/lib/utils";
 import { Label } from "@repo/ui/components/label";
@@ -158,6 +160,8 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
 
 export {
   useFormField,
+  useForm,
+  zodResolver,
   Form,
   FormItem,
   FormLabel,

@@ -46,6 +46,8 @@ export const nextJsConfig = [
       "react/react-in-jsx-scope": "off",
       // Désactiver react/prop-types pour les projets TypeScript
       "react/prop-types": "off",
+      // Désactiver l'échappement des entités pour le contenu multilingue
+      "react/no-unescaped-entities": "off",
     },
   },
   {
